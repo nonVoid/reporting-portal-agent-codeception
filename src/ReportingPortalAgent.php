@@ -1,23 +1,23 @@
-<?php
+<?php /** @noinspection PhpUnused */
 
-use ReportPortalBasic\Enum\ItemStatusesEnum as ItemStatusesEnum;
-use ReportPortalBasic\Enum\ItemTypesEnum as ItemTypesEnum;
-use ReportPortalBasic\Enum\LogLevelsEnum as LogLevelsEnum;
+use Codeception\Platform\Extension;
+use Psr\Http\Message\ResponseInterface;
+use ReportPortalBasic\Enum\ItemStatusesEnum;
+use ReportPortalBasic\Enum\ItemTypesEnum;
+use ReportPortalBasic\Enum\LogLevelsEnum;
 use ReportPortalBasic\Service\ReportPortalHTTPService;
-use GuzzleHttp\Psr7\Response as Response;
-use \Codeception\Events as Events;
-use \Codeception\Event\SuiteEvent as SuiteEvent;
-use \Codeception\Event\TestEvent as TestEvent;
-use \Codeception\Event\FailEvent as FailEvent;
-use \Codeception\Event\StepEvent as StepEvent;
-use \Codeception\Event\PrintResultEvent as PrintResultEvent;
+use \Codeception\Events;
+use \Codeception\Event\SuiteEvent;
+use \Codeception\Event\TestEvent;
+use \Codeception\Event\FailEvent;
+use \Codeception\Event\StepEvent;
+use \Codeception\Event\PrintResultEvent;
 
 /**
- * Report portal agent for Codeception framework.
+ * Class ReportPortalAgent
  *
- * @author Mikalai_Kabzar
  */
-class ReportingPortalAgent extends \Codeception\Platform\Extension
+class ReportingPortalAgent extends Extension
 {
     const STRING_LIMIT = 20000;
     const COMMENT_STER_STRING = '$this->getScenario()->comment($description);';
@@ -95,13 +95,16 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
      * Before suite action
      *
      * @param SuiteEvent $e
+     *
+     * @throws Throwable
      */
     public function beforeSuite(SuiteEvent $e)
     {
         if ($this->isFirstSuite == false) {
             $this->configureClient();
             try {
-                self::$httpService->launchTestRun($this->launchName, $this->launchDescription, ReportPortalHTTPService::DEFAULT_LAUNCH_MODE, []);
+                self::$httpService::launchTestRun($this->launchName, $this->launchDescription,
+                    ReportPortalHTTPService::DEFAULT_LAUNCH_MODE, []);
             } catch (\Throwable $e) {
                 $this->connectionFailed = true;
                 if(!$this->allowFailure) {
@@ -115,7 +118,7 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
             return;
         }
         $suiteBaseName = $e->getSuite()->getBaseName();
-        $response = self::$httpService->createRootItem($suiteBaseName, $suiteBaseName . ' tests', []);
+        $response = self::$httpService::createRootItem($suiteBaseName, $suiteBaseName . ' tests', []);
         $this->rootItemID = self::getID($response);
     }
 
@@ -129,7 +132,7 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
         if($this->connectionFailed) {
             return;
         }
-        self::$httpService->finishRootItem();
+        self::$httpService::finishRootItem();
     }
 
     /**
@@ -163,7 +166,7 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
         if (array_key_exists(self::EXAMPLE_JSON_WORD, $arrayWithParams)) {
             $exampleParams = $arrayWithParams[self::EXAMPLE_JSON_WORD];
             foreach ($exampleParams as $key => $value) {
-                $stringWithParams = $stringWithParams . $value . '; ';
+                $stringWithParams .= $value . '; ';
             }
             if (!empty($stringWithParams)) {
                 $stringWithParams = substr($stringWithParams, 0, -2);
@@ -173,7 +176,8 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
 
         $this->testName = $testName . $stringWithParams;
         $this->testDescription = $stringWithParams;
-        $response = self::$httpService->startChildItem($this->rootItemID, $this->testDescription, $this->testName, ItemTypesEnum::TEST, []);
+        $response = self::$httpService::startChildItem($this->rootItemID, $this->testDescription, $this->testName,
+        ItemTypesEnum::TEST, []);
         $id = self::getID($response);
         if(!empty($id)) {
             $this->testItemID = $id;
@@ -216,12 +220,12 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
         $fileName = $e->getTest()->getMetadata()->getFilename();
         $testName = $e->getTest()->getMetadata()->getName();
         $step = $fileName . ':' . $testName;
-        self::$httpService->addLogMessage($this->lastFailedStepItemID, $step, LogLevelsEnum::ERROR);
+        self::$httpService::addLogMessage($this->lastFailedStepItemID, $step, LogLevelsEnum::ERROR);
         if (strpos($message, self::TOO_LONG_CONTENT) === false) {
-            self::$httpService->addLogMessage($this->lastFailedStepItemID, $message, LogLevelsEnum::ERROR);
+            self::$httpService::addLogMessage($this->lastFailedStepItemID, $message, LogLevelsEnum::ERROR);
         }
-        self::$httpService->addLogMessage($this->lastFailedStepItemID, $trace, LogLevelsEnum::ERROR);
-        self::$httpService->finishItem($this->testItemID, ItemStatusesEnum::FAILED, $this->testDescription);
+        self::$httpService::addLogMessage($this->lastFailedStepItemID, $trace, LogLevelsEnum::ERROR);
+        self::$httpService::finishItem($this->testItemID, ItemStatusesEnum::FAILED, $this->testDescription);
     }
 
     /**
@@ -248,7 +252,7 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
             codecept_debug("No Reporting ID for test." . $this->testName);
             return;
         }
-        self::$httpService->finishItem($this->testItemID, ItemStatusesEnum::STOPPED, $this->testDescription);
+        self::$httpService::finishItem($this->testItemID, ItemStatusesEnum::STOPPED, $this->testDescription);
         $this->setFailedLaunch();
     }
 
@@ -262,7 +266,7 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
         if($this->connectionFailed) {
             return;
         }
-        self::$httpService->finishItem($this->testItemID, ItemStatusesEnum::CANCELLED, $this->testDescription);
+        self::$httpService::finishItem($this->testItemID, ItemStatusesEnum::CANCELLED, $this->testDescription);
         $this->setFailedLaunch();
     }
 
@@ -279,9 +283,9 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
         $this->beforeTest($e);
         $trace = $e->getFail()->getTraceAsString();
         $message = $e->getFail()->getMessage();
-        self::$httpService->addLogMessage($this->testItemID, $message, LogLevelsEnum::ERROR);
-        self::$httpService->addLogMessage($this->testItemID, $trace, LogLevelsEnum::ERROR);
-        self::$httpService->finishItem($this->testItemID, ItemStatusesEnum::SKIPPED, $message);
+        self::$httpService::addLogMessage($this->testItemID, $message, LogLevelsEnum::ERROR);
+        self::$httpService::addLogMessage($this->testItemID, $trace, LogLevelsEnum::ERROR);
+        self::$httpService::finishItem($this->testItemID, ItemStatusesEnum::SKIPPED, $message);
         $this->setFailedLaunch();
     }
 
@@ -295,7 +299,7 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
         if($this->connectionFailed) {
             return;
         }
-        self::$httpService->finishItem($this->testItemID, ItemStatusesEnum::PASSED, $this->testDescription);
+        self::$httpService::finishItem($this->testItemID, ItemStatusesEnum::PASSED, $this->testDescription);
     }
 
     /**
@@ -311,7 +315,10 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
         $this->stepCounter++;
         $pairs = explode(':', $e->getStep()->getLine());
         $fileAddress = $pairs[0];
-        $lineNumber = $pairs[1];
+        if(empty($fileAddress) === true) {
+            return;
+        }
+        $lineNumber = $pairs[1] ?? 0;
         $fileLines = file($fileAddress);
         $stepName = $fileLines[$lineNumber - 1];
         $stepAsString = $e->getStep()->toString(self::STRING_LIMIT);
@@ -319,9 +326,9 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
         if ($this->isCommentStep) {
             $stepName = $stepAsString;
         }
-        $response = self::$httpService->startChildItem($this->testItemID, '', $stepName, ItemTypesEnum::STEP, []);
+        $response = self::$httpService::startChildItem($this->testItemID, '', $stepName, ItemTypesEnum::STEP, []);
         $this->stepItemID = self::getID($response);
-        self::$httpService->setStepItemID($this->stepItemID);
+        self::$httpService::setStepItemID($this->stepItemID);
         $this->lastStepItemID = $this->stepItemID;
     }
 
@@ -341,7 +348,7 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
         $isWebDriverModuleEnabled = $this->hasModule(self::WEBDRIVER_MODULE_NAME);
         if ($isFailedStep and $isWebDriverModuleEnabled) {
             $screenShot = $this->getModule(self::WEBDRIVER_MODULE_NAME)->webDriver->takeScreenshot();
-            self::$httpService->addLogMessageWithPicture($this->stepItemID, $stepToString, LogLevelsEnum::ERROR,
+            self::$httpService::addLogMessageWithPicture($this->stepItemID, $stepToString, LogLevelsEnum::ERROR,
                 $screenShot, self::PICTURE_CONTENT_TYPE);
         }
         $status = self::getStatusByBool($isFailedStep);
@@ -350,8 +357,8 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
         } else {
             $description = $e->getStep()->toString(self::STRING_LIMIT);
         }
-        self::$httpService->finishItem($this->stepItemID, $status, $description);
-        self::$httpService->setStepItemIDToEmpty();
+        self::$httpService::finishItem($this->stepItemID, $status, $description);
+        self::$httpService::setStepItemIDToEmpty();
         if ($isFailedStep) {
             $this->lastFailedStepItemID = $this->stepItemID;
         }
@@ -378,8 +385,8 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
             return;
         }
         $status = self::getStatusByBool($this->isFailedLaunch);
-        $HTTPResult = self::$httpService->finishTestRun($status);
-        self::$httpService->finishAll($HTTPResult);
+        $HTTPResult = self::$httpService::finishTestRun($status);
+        self::$httpService::finishAll($HTTPResult);
     }
 
     /**
@@ -403,7 +410,7 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
      */
     private function setFailedLaunch()
     {
-        if ($this->stepCounter != 0) {
+        if ($this->stepCounter !== 0) {
             $this->lastFailedStepItemID = $this->lastStepItemID;
         }
         $this->isFailedLaunch = true;
@@ -412,10 +419,10 @@ class ReportingPortalAgent extends \Codeception\Platform\Extension
     /**
      * Get ID from response
      *
-     * @param Response $HTTPResponse
+     * @param ResponseInterface $HTTPResponse
      * @return string
      */
-    private static function getID(Response $HTTPResponse)
+    private static function getID(ResponseInterface $HTTPResponse): string
     {
         return json_decode($HTTPResponse->getBody(), true)['id'];
     }

@@ -1,5 +1,5 @@
 {
-  "name": "osi-open-source/reporting-portal-agent-codeception",
+  "name": "nonvoid/reporting-portal-agent-codeception",
   "type": "library",
   "description": "Specific classes to integrate Codeception-based test framework with Report Portal (http://reportportal.io/).",
   "keywords": [
@@ -8,24 +8,26 @@
     "Report Portal",
     "Codeception"
   ],
-  "homepage": "https://github.com/osi-open-source/reporting-portal-agent-codeception",
+  "homepage": "https://github.com/nonvoid/reporting-portal-agent-codeception",
   "license": "MIT",
   "authors": [
     {
-      "name": "Kabzar Mikalai",
-      "email": "loki.engine@mail.ru",
+      "name": "Felix Weber",
+      "email": "github@nonvoid.de",
       "role": "Developer"
-    },
+    }
+  ],
+  "repositories": [
     {
-      "name": "Ivelin Pavlov",
-      "email": "ibpavlov@gmail.com",
-      "role": "Developer"
+      "type": "vcs",
+      "url": "https://github.com/nonVoid/client-php"
     }
   ],
   "minimum-stability": "stable",
   "require": {
     "codeception/codeception": "*",
-    "reportportal/basic": "1.0.x-dev"
+    "reportportal/basic": "dev-master",
+    "ext-json": "*"
   },
   "autoload": {
     "classmap": [
