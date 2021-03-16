@@ -47,7 +47,6 @@ Specific class to integrate Codeception-based test framework with Report Portal 
     REPORT_PORTAL_PROJECT_NAME=your_name_personal
     REPORT_PORTAL_LAUNCH_NAME="testLaunchName!!!"
     REPORT_PORTAL_LAUNCH_DESCRIPTION="test launch description !!!"
-    REPORT_PORTAL_ALLOW_FAILURE=""
    ```
 3) Run codeception tests as usual:
     ```shell script
