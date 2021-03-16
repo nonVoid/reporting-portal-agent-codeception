@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9378a0ff2b5eae31d423917cd0ddd486",
+    "content-hash": "179d42b5e9b73b0a90707e8e8df74d62",
     "packages": [
         {
             "name": "behat/gherkin",
@@ -1722,54 +1722,45 @@
             "time": "2019-03-08T08:55:37+00:00"
         },
         {
-            "name": "reportportal/basic",
-            "version": "dev-master",
+            "name": "reportportal/base",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Mikalai-Kabzar/client-php.git",
-                "reference": "792d77e07f9787e293862d41c17c41a8d812caa4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Mikalai-Kabzar/client-php/zipball/792d77e07f9787e293862d41c17c41a8d812caa4",
-                "reference": "792d77e07f9787e293862d41c17c41a8d812caa4",
-                "shasum": ""
+                "url": "https://github.com/nonVoid/client-php",
+                "reference": "a3ecfbd00aabfe87756ac088a6f1ffcfe2bed3b2"
             },
             "require": {
+                "ext-json": "*",
+                "ext-mbstring": "*",
                 "guzzlehttp/guzzle": "*",
+                "php": "^7.1",
                 "psr/http-message": "*",
                 "symfony/yaml": "*"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "classmap": [
                     "src/"
                 ]
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
-                    "name": "Kabzar Mikalai",
-                    "email": "loki.engine@mail.ru",
+                    "name": "Felix Weber",
+                    "email": "github@nonvoid.de",
                     "role": "Developer"
                 }
             ],
             "description": "Basic classes for Report Portal collaboration",
-            "homepage": "https://github.com/Mikalai-Kabzar/client-php",
+            "homepage": "https://github.com/nonVoid/client-php",
             "keywords": [
+                "Report",
                 "Report Portal",
-                "report",
-                "reporting"
+                "Reporting"
             ],
-            "support": {
-                "issues": "https://github.com/Mikalai-Kabzar/client-php/issues",
-                "source": "https://github.com/Mikalai-Kabzar/client-php/tree/master"
-            },
-            "time": "2018-11-08T08:48:36+00:00"
+            "time": "2021-03-16T08:28:55+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -4024,12 +4015,12 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "reportportal/basic": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "ext-json": "*"
+    },
     "platform-dev": [],
     "plugin-api-version": "2.0.0"
 }

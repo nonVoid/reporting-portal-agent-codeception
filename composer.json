@@ -19,14 +19,15 @@
   ],
   "repositories": [
     {
-      "type": "vcs",
-      "url": "https://github.com/nonVoid/client-php"
+      "type": "git",
+      "url": "https://github.com/nonVoid/client-php",
+      "reference": "master"
     }
   ],
   "minimum-stability": "stable",
   "require": {
     "codeception/codeception": "*",
-    "reportportal/basic": "dev-master",
+    "reportportal/base": "^1.0.1",
     "ext-json": "*"
   },
   "autoload": {

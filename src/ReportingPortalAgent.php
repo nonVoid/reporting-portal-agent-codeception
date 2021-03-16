@@ -1,4 +1,4 @@
-<?php /** @noinspection PhpUnused */
+<?php
 
 use Codeception\Platform\Extension;
 use Psr\Http\Message\ResponseInterface;

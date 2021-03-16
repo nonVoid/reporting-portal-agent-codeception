@@ -2,5 +2,6 @@ vendor/
 build/
 .project
 .buildpath
-
+.idea
 .settings/org.eclipse.wst.validation.prefs
+.idea/*
