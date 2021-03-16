@@ -79,13 +79,13 @@ class ReportingPortalAgent extends Extension
      */
     private function configureClient()
     {
-        $UUID = $this->config['UUID'];
-        $projectName = $this->config['projectName'];
-        $host = $this->config['host'];
-        $timeZone = $this->config['timeZone'];
-        $this->launchName = $this->config['launchName'];
-        $this->launchDescription = $this->config['launchDescription'];
-        $this->allowFailure = $this->config['allowFailure'] ?? true;
+        $UUID = $this->config['UUID'] ?? getenv('REPORT_PORTAL_UUID');
+        $projectName = $this->config['projectName'] ?? getenv('REPORT_PORTAL_PROJECT_NAME');
+        $host = $this->config['host'] ?? getenv('REPORT_PORTAL_HOST');
+        $timeZone = $this->config['timeZone'] ?? getenv('REPORT_PORTAL_TIMEZONE') ?? '.000+01:00';
+        $this->launchName = $this->config['launchName'] ?? getenv('REPORT_PORTAL_LAUNCH_NAME');
+        $this->launchDescription = $this->config['launchDescription'] ?? getenv('REPORT_PORTAL_LAUNCH_DESCRIPTION');
+        $this->allowFailure = $this->config['allowFailure'] ?? getenv('REPORT_PORTAL_ALLOW_FAILURE') ?? true;
         $this->connectionFailed = false;
         $isHTTPErrorsAllowed = true;
         $baseURI = sprintf(ReportPortalHTTPService::BASE_URI_TEMPLATE, $host);
