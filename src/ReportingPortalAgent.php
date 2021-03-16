@@ -1,6 +1,8 @@
 <?php
 
+use Codeception\Exception\ModuleRequireException;
 use Codeception\Platform\Extension;
+use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 use ReportPortalBasic\Enum\ItemStatusesEnum;
 use ReportPortalBasic\Enum\ItemTypesEnum;
@@ -100,7 +102,7 @@ class ReportingPortalAgent extends Extension
      */
     public function beforeSuite(SuiteEvent $e)
     {
-        if ($this->isFirstSuite == false) {
+        if ($this->isFirstSuite === false) {
             $this->configureClient();
             try {
                 self::$httpService::launchTestRun($this->launchName, $this->launchDescription,
@@ -126,6 +128,8 @@ class ReportingPortalAgent extends Extension
      * After suite action
      *
      * @param SuiteEvent $e
+     *
+     * @throws GuzzleException
      */
     public function afterSuite(SuiteEvent $e)
     {
@@ -149,6 +153,8 @@ class ReportingPortalAgent extends Extension
      * Before test action
      *
      * @param TestEvent $e
+     *
+     * @throws GuzzleException
      */
     public function beforeTest(TestEvent $e)
     {
@@ -208,6 +214,8 @@ class ReportingPortalAgent extends Extension
      * After test fail action
      *
      * @param FailEvent $e
+     *
+     * @throws GuzzleException
      */
     public function afterTestFail(FailEvent $e)
     {
@@ -242,6 +250,8 @@ class ReportingPortalAgent extends Extension
      * After test error action
      *
      * @param FailEvent $e
+     *
+     * @throws GuzzleException
      */
     public function afterTestError(FailEvent $e)
     {
@@ -260,6 +270,8 @@ class ReportingPortalAgent extends Extension
      * After test incomplete action
      *
      * @param FailEvent $e
+     *
+     * @throws GuzzleException
      */
     public function afterTestIncomplete(FailEvent $e)
     {
@@ -274,6 +286,8 @@ class ReportingPortalAgent extends Extension
      * After test skipped action
      *
      * @param FailEvent $e
+     *
+     * @throws GuzzleException
      */
     public function afterTestSkipped(FailEvent $e)
     {
@@ -293,6 +307,8 @@ class ReportingPortalAgent extends Extension
      * After test success action
      *
      * @param TestEvent $e
+     *
+     * @throws GuzzleException
      */
     public function afterTestSuccess(TestEvent $e)
     {
@@ -306,6 +322,8 @@ class ReportingPortalAgent extends Extension
      * Before step action
      *
      * @param StepEvent $e
+     *
+     * @throws GuzzleException
      */
     public function beforeStep(StepEvent $e)
     {
@@ -336,6 +354,9 @@ class ReportingPortalAgent extends Extension
      * After step action
      *
      * @param StepEvent $e
+     *
+     * @throws ModuleRequireException
+     * @throws GuzzleException
      */
     public function afterStep(StepEvent $e)
     {
@@ -346,7 +367,7 @@ class ReportingPortalAgent extends Extension
         $stepToString = $e->getStep()->toString(self::STRING_LIMIT);
         $isFailedStep = $e->getStep()->hasFailed();
         $isWebDriverModuleEnabled = $this->hasModule(self::WEBDRIVER_MODULE_NAME);
-        if ($isFailedStep and $isWebDriverModuleEnabled) {
+        if ($isFailedStep && $isWebDriverModuleEnabled) {
             $screenShot = $this->getModule(self::WEBDRIVER_MODULE_NAME)->webDriver->takeScreenshot();
             self::$httpService::addLogMessageWithPicture($this->stepItemID, $stepToString, LogLevelsEnum::ERROR,
                 $screenShot, self::PICTURE_CONTENT_TYPE);
@@ -378,6 +399,8 @@ class ReportingPortalAgent extends Extension
      * After testing action
      *
      * @param PrintResultEvent $e
+     *
+     * @throws GuzzleException
      */
     public function afterTesting(PrintResultEvent $e)
     {
@@ -395,7 +418,7 @@ class ReportingPortalAgent extends Extension
      * @param bool $isFailedItem
      * @return string
      */
-    private static function getStatusByBool(bool $isFailedItem)
+    private static function getStatusByBool(bool $isFailedItem): string
     {
         if ($isFailedItem) {
             $stringItemStatus = ItemStatusesEnum::FAILED;
